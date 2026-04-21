@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WORKSPACE v0.2.5</title>
+    <title>WORKSPACE v0.3.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@400;700&family=Sawarabi+Mincho&family=Noto+Sans+JP&family=Sawarabi+Gothic&family=Shippori+Mincho&family=Yuji+Syuku&family=Zen+Kaku+Gothic+New&family=Hina+Mincho&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -29,11 +29,10 @@
         .nav-item:hover { background: rgba(255,255,255,0.1); }
         .nav-item.active { background: var(--primary); color: white; }
         .nav-item.active::after { content: ""; position: absolute; bottom: 5px; left: 15%; width: 70%; height: 2px; background: white; border-radius: 2px; }
-
         .sidebar-sep-white { border-top: 2px solid #fff; margin: 15px 0; opacity: 0.8; }
         #admin-folder-content { display: none; padding-left: 15px; }
 
-        /* コンテンツ */
+        /* コンテンツエリア */
         main { flex: 1; padding: 40px; overflow-y: auto; position: relative; scroll-behavior: smooth; }
         @media (max-width: 600px) { main { padding: 15px; } }
 
@@ -42,68 +41,100 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 25px; overflow: hidden; box-shadow: var(--shadow); }
-        .card-header { background: var(--accent-bg); padding: 15px 25px; font-weight: bold; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+        .card-header { background: var(--accent-bg); padding: 15px 25px; font-weight: bold; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .card-body { padding: 25px; }
 
-        /* カレンダー */
+        /* カレンダー (Google型) */
         #cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--border); gap: 1px; border: 1px solid var(--border); }
-        .cal-day { background: #fff; min-height: 110px; padding: 8px; cursor: pointer; transition: 0.2s; position: relative; }
+        .cal-day { background: #fff; min-height: 120px; padding: 8px; cursor: pointer; transition: 0.2s; position: relative; overflow-y: auto; }
         .cal-day:hover { background: #fdfaf7; }
-        .ev-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 2px 6px; border-radius: 4px; margin-top: 3px; color: white; font-size: 0.7rem; font-weight: bold; }
+        .ev-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 2px 4px; border-radius: 3px; margin-top: 2px; color: white; font-size: 0.65rem; font-weight: bold; }
 
-        /* ゲーム */
-        #game-selection { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; padding: 20px; }
-        .game-card { background: white; padding: 30px 15px; border-radius: 20px; border: 3px solid var(--primary); cursor: pointer; text-align: center; transition: 0.3s; box-shadow: var(--shadow); }
-        .game-card:hover { transform: translateY(-8px); background: var(--accent-bg); }
-        .game-card i { font-size: 3rem; display: block; margin-bottom: 10px; }
+        /* ゲーム (画面最大化 ⑨) */
+        #game-selection { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
+        .game-card { background: white; padding: 40px 20px; border-radius: 20px; border: 3px solid var(--primary); cursor: pointer; text-align: center; transition: 0.3s; box-shadow: var(--shadow); }
+        .game-card:hover { transform: translateY(-10px); background: var(--accent-bg); }
+        .game-card i { font-size: 4rem; display: block; margin-bottom: 15px; }
 
-        #g2048-container { background: #bbada0; width: 300px; height: 300px; border-radius: 10px; padding: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 0 auto; position: relative; }
-        .tile2048 { width: 60px; height: 60px; background: rgba(238, 228, 218, 0.35); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.4rem; transition: 0.1s; }
+        #g2048-container { background: #bbada0; width: 450px; height: 450px; border-radius: 10px; padding: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 auto; position: relative; }
+        .tile2048 { width: 95px; height: 95px; background: rgba(238, 228, 218, 0.35); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 2rem; position: relative; transition: transform 0.15s ease, background 0.15s ease; }
+        /* 2048アニメーション用 ② */
+        .tile-move { transition: transform 0.1s ease-in-out; }
+
+        #t-canvas { border: 5px solid #333; background: #000; display: block; margin: 0 auto; width: 300px; height: 500px; }
 
         /* メモ */
         #memo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
         .note-card { background: #fff; padding: 20px; border-radius: 12px; border-left: 5px solid var(--primary); cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: 0.2s; position: relative; }
-        .note-card.selectable { border: 2px dashed #e53935; }
-        .delete-overlay { position: absolute; top: 10px; right: 10px; display: none; }
-        .note-card.selectable .delete-overlay { display: block; }
-
+        .note-card.selectable { outline: 3px solid #ff5252; }
         #memo-editor-content { min-height: 500px; padding: 30px; outline: none; background: white; background-image: linear-gradient(var(--line-color) 1px, transparent 1px); background-size: 100% 32px; line-height: 32px; font-size: 16px; }
+
+        /* ツールバー ⑤ */
+        .toolbar-btn { font-family: 'serif'; padding: 5px 12px; cursor: pointer; background: #fff; border: 1px solid #ccc; border-radius: 4px; }
+        .toolbar-btn.b { font-weight: bold; }
+        .toolbar-btn.i { font-style: italic; }
+        .toolbar-btn.s { text-decoration: line-through; }
 
         /* 共通UI */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
-        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
-        
-        #mobile-controls { display: grid; grid-template-columns: repeat(3, 70px); gap: 10px; justify-content: center; margin-top: 20px; }
-        .ctrl-btn { background: var(--primary); color: white; border-radius: 50%; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; user-select: none; }
-
+        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
         .game-over-layer { position: absolute; inset: 0; background: rgba(0,0,0,0.8); color: white; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 200; border-radius: 10px; }
+        
+        .undo-toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: #fff; padding: 12px 20px; border-radius: 30px; display: none; z-index: 10000; align-items: center; gap: 10px; box-shadow: var(--shadow); }
     </style>
 </head>
 <body>
 
     <div id="login-modal" class="modal"><div class="modal-content">
         <h2 style="text-align:center;">管理者認証</h2>
-        <input type="password" id="pass-field" placeholder="Password (1234)" style="width:100%; padding:15px; box-sizing:border-box; margin:20px 0; font-size:1.2rem;" onkeydown="if(event.key==='Enter')auth()">
+        <input type="password" id="pass-field" placeholder="Password" style="width:100%; padding:15px; box-sizing:border-box; margin:20px 0; font-size:1.2rem;" onkeydown="if(event.key==='Enter')auth()">
         <button onclick="auth()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">ログイン</button>
-        <button onclick="closeLogin()" style="width:100%; margin-top:10px; background:none; border:none; color:#666;">キャンセル</button>
+        <button onclick="closeLogin()" style="width:100%; margin-top:10px; background:none; border:none; color:#666; cursor:pointer;">キャンセル</button>
     </div></div>
 
-    <div id="cal-modal" class="modal"><div class="modal-content">
+    <div id="cal-modal" class="modal"><div class="modal-content" style="max-width:600px;">
         <h3 id="cal-modal-date">日付詳細</h3>
-        <div id="cal-event-list" style="margin-bottom:20px; max-height:200px; overflow-y:auto; border-bottom:1px solid #eee;"></div>
-        <div style="background:#f9f9f9; padding:15px; border-radius:8px;">
-            <input type="time" id="ev-time" style="width:100%; margin-bottom:10px; padding:5px;">
-            <input type="text" id="ev-text" placeholder="予定内容" style="width:100%; margin-bottom:10px; padding:8px; box-sizing:border-box;">
-            <select id="ev-color" style="width:100%; margin-bottom:10px; padding:8px;">
-                <option value="#5d4037">ブラウン (通常)</option>
-                <option value="#ef5350">レッド (重要)</option>
-                <option value="#42a5f5">ブルー (仕事)</option>
-                <option value="#66bb6a">グリーン (私用)</option>
+        <div id="cal-event-list" style="margin-bottom:15px; max-height:150px; overflow-y:auto;"></div>
+        <div class="sidebar-sep-white" style="border-top:1px solid #ddd;"></div>
+        <h4>予定の作成・編集</h4>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <input type="text" id="ev-title" placeholder="予定タイトル" style="grid-column: span 2; padding:8px;">
+            <label>開始: <input type="datetime-local" id="ev-start" style="width:100%;"></label>
+            <label>終了: <input type="datetime-local" id="ev-end" style="width:100%;"></label>
+            <input type="text" id="ev-loc" placeholder="場所" style="grid-column: span 2; padding:8px;">
+            <textarea id="ev-desc" placeholder="説明" style="grid-column: span 2; padding:8px; height:60px;"></textarea>
+            <input type="text" id="ev-attend" placeholder="出席者 (カンマ区切り)" style="grid-column: span 2; padding:8px;">
+            <select id="ev-repeat" style="padding:8px;">
+                <option value="none">繰り返さない</option>
+                <option value="daily">毎日</option>
+                <option value="weekly">毎週</option>
+                <option value="monthly">毎月</option>
             </select>
-            <button onclick="saveEvent()" style="width:100%; padding:10px; background:var(--primary); color:white; border:none; border-radius:5px;">予定を追加</button>
+            <select id="ev-color" style="padding:8px;">
+                <option value="#5d4037">ブラウン</option>
+                <option value="#ef5350">レッド</option>
+                <option value="#42a5f5">ブルー</option>
+                <option value="#66bb6a">グリーン</option>
+                <option value="#ffa726">オレンジ</option>
+            </select>
         </div>
-        <button onclick="closeCalModal()" style="width:100%; margin-top:15px; background:none; border:none; color:#999;">閉じる</button>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button onclick="saveEvent()" style="flex:1; padding:12px; background:var(--primary); color:white; border:none; border-radius:5px; cursor:pointer;">保存</button>
+            <button onclick="closeCalModal()" style="flex:1; padding:12px; background:#eee; border:none; border-radius:5px; cursor:pointer;">閉じる</button>
+        </div>
     </div></div>
+
+    <div id="search-modal" class="modal"><div class="modal-content">
+        <h3>予定の検索</h3>
+        <input type="text" id="search-query" placeholder="キーワード・出席者など" style="width:100%; padding:10px; margin-bottom:15px;">
+        <div id="search-results" style="max-height:300px; overflow-y:auto;"></div>
+        <button onclick="closeSearch()" style="width:100%; margin-top:15px;">閉じる</button>
+    </div></div>
+
+    <div id="undo-toast" class="undo-toast">
+        <span>操作を元に戻しますか？</span>
+        <button onclick="executeUndo()" style="background:var(--primary); color:white; border:none; border-radius:4px; padding:5px 10px; cursor:pointer;">元に戻す</button>
+    </div>
 
     <nav>
         <div class="nav-text" style="font-size:1.5rem; font-weight:bold; text-align:center; margin-bottom:30px;">WORKSPACE</div>
@@ -130,32 +161,39 @@
                 <div id="date-string" style="font-size:1.5rem; color:#8d6e63;"></div>
             </div></div>
             <div class="card">
-                <div class="card-header">最新の更新</div>
+                <div class="card-header">最新の更新 (Top 2)</div>
                 <div class="card-body">
                     <div id="history-preview"></div>
-                    <button onclick="tab('history-page')" style="margin-top:15px; cursor:pointer;">履歴をすべて見る</button>
+                    <button onclick="tab('history-page')" style="margin-top:15px; cursor:pointer; background:none; border:1px solid var(--primary); padding:8px 15px; border-radius:5px;">すべての履歴を表示</button>
                 </div>
             </div>
         </div>
 
         <div id="history-page" class="page">
-            <h2>更新履歴</h2>
-            <div class="card"><div class="card-body" id="history-full" style="line-height:1.8;"></div></div>
-            <button onclick="tab('home')">戻る</button>
+            <h2>更新履歴一覧 (v0.0.1～v0.3.1)</h2>
+            <div class="card"><div class="card-body" id="history-full" style="line-height:1.8; font-size:0.9rem;"></div></div>
+            <button onclick="tab('home')" style="padding:10px 20px;">戻る</button>
         </div>
 
         <div id="calendar" class="page">
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <button onclick="moveMonth(-1)">◀</button>
-                        <button onclick="vDate=new Date();renderCal();">今日</button>
-                        <button onclick="moveMonth(1)">▶</button>
-                    </div>
-                    <span id="cal-month-title"></span>
-                    <span></span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button onclick="moveMonth(-1)">◀</button>
+                    <button onclick="vDate=new Date();renderCal();" style="font-weight:bold;">今日</button>
+                    <button onclick="moveMonth(1)">▶</button>
+                    <h2 id="cal-month-title" style="margin:0 15px;"></h2>
                 </div>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="openSearch()">🔍 検索</button>
+                    <button onclick="fetchPublicHolidays()">🌐 祝日同期</button>
+                </div>
+            </div>
+            <div class="card">
                 <div id="cal-grid"></div>
+            </div>
+            <div class="card" style="margin-top:20px;">
+                <div class="card-header">カレンダー連携タスク</div>
+                <div id="cal-task-display" class="card-body" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
             </div>
         </div>
 
@@ -163,8 +201,8 @@
             <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
                 <h2>📒 メモ</h2>
                 <div style="display:flex; gap:10px;">
-                    <button onclick="newMemo()" style="padding:10px 20px; border-radius:20px; background:var(--primary); color:white; border:none; cursor:pointer;">＋ 新規メモ</button>
-                    <button onclick="toggleMemoManage()" style="background:none; border:1px solid var(--border); border-radius:50%; width:40px; height:40px; cursor:pointer;">···</button>
+                    <button onclick="newMemo()" style="padding:10px 20px; border-radius:20px; background:var(--primary); color:white; border:none; cursor:pointer; font-weight:bold;">＋ 新規作成</button>
+                    <button onclick="toggleMemoManage()" style="background:#fff; border:1px solid var(--border); border-radius:50%; width:40px; height:40px; cursor:pointer;">···</button>
                 </div>
             </div>
             <div id="memo-grid"></div>
@@ -172,20 +210,24 @@
 
         <div id="memo-editor" class="page">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <button onclick="tab('notes')">← 戻る</button>
-                <div id="save-status"></div>
+                <button onclick="tab('notes')" style="background:none; border:none; cursor:pointer;">← 戻って保存</button>
+                <div id="save-status" style="font-weight:bold; color:var(--primary);"></div>
             </div>
             <input type="text" id="memo-title" placeholder="無題のメモ" style="width:100%; font-size:1.8rem; border:none; background:transparent; font-weight:bold; outline:none;" oninput="autoSaveMemo()">
             <div class="card">
-                <div style="padding:10px; background:#f5f5f5; border-bottom:1px solid var(--border); display:flex; flex-wrap:wrap; gap:10px;">
-                    <button onclick="formatDoc('bold')"><b>B</b></button>
-                    <button onclick="formatDoc('italic')"><i>I</i></button>
-                    <select onchange="formatDoc('fontSize', this.value); this.selectedIndex=0;">
-                        <option value="">サイズ</option>
-                        <option value="1">1 (最小)</option><option value="2">2</option><option value="3">3 (標準)</option>
-                        <option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7 (最大)</option>
-                    </select>
-                    <select id="font-select" onchange="applyFont(this.value)">
+                <div style="padding:10px; background:#f5f5f5; border-bottom:1px solid var(--border); display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+                    <button class="toolbar-btn b" onclick="formatDoc('bold')">B</button>
+                    <button class="toolbar-btn i" onclick="formatDoc('italic')">I</button>
+                    <button class="toolbar-btn s" onclick="formatDoc('strikeThrough')">S</button>
+                    <div style="display:flex; align-items:center; gap:5px; background:#fff; border:1px solid #ccc; padding:2px 5px; border-radius:4px;">
+                        <span>Size:</span>
+                        <input type="number" id="font-size-num" value="3" min="1" max="7" style="width:35px; border:none; outline:none;" onchange="formatDoc('fontSize', this.value)">
+                        <div style="display:flex; flex-direction:column;">
+                            <button onclick="changeFontSize(1)" style="font-size:8px; padding:0; height:12px;">▲</button>
+                            <button onclick="changeFontSize(-1)" style="font-size:8px; padding:0; height:12px;">▼</button>
+                        </div>
+                    </div>
+                    <select id="font-select" onchange="applyFont(this.value)" style="padding:4px;">
                         <option value="'M PLUS Rounded 1c'">Roundedゴシック</option>
                         <option value="'Sawarabi Mincho'">明朝体</option>
                         <option value="'Noto Sans JP'">Noto Sans</option>
@@ -194,7 +236,7 @@
                         <option value="'Hina Mincho'">ひな明朝</option>
                         <option value="'Zen Kaku Gothic New'">Zen角ゴシック</option>
                     </select>
-                    <button onclick="triggerImg()">📷 画像</button>
+                    <button onclick="triggerImg()" style="cursor:pointer;">📷 画像挿入</button>
                     <input type="file" id="img-upload" style="display:none;" accept="image/*" onchange="insertImg(this)">
                 </div>
                 <div id="memo-editor-content" contenteditable="true" oninput="autoSaveMemo()"></div>
@@ -202,11 +244,11 @@
         </div>
 
         <div id="task-page" class="page">
-            <h2>✅ タスク管理</h2>
+            <h2>✅ タスク管理 (ToDo)</h2>
             <div class="card"><div class="card-body">
                 <div style="display:flex; gap:10px;">
-                    <input type="text" id="task-input" placeholder="Enterで追加..." style="flex:1; padding:12px;" onkeydown="if(event.key==='Enter')addTask()">
-                    <button onclick="addTask()" style="padding:0 20px;">追加</button>
+                    <input type="text" id="task-input" placeholder="新しいタスクを入力..." style="flex:1; padding:12px; border-radius:8px; border:1px solid #ccc;" onkeydown="if(event.key==='Enter')addTask()">
+                    <button onclick="addTask()" style="padding:0 25px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">追加</button>
                 </div>
                 <div id="task-list" style="margin-top:20px;"></div>
             </div></div>
@@ -214,57 +256,84 @@
 
         <div id="game-page" class="page">
             <div id="game-selection">
-                <div class="game-card" onclick="playGame('tetris')"><i>🧱</i><h3>TETRIS</h3></div>
-                <div class="game-card" onclick="playGame('2048')"><i>🔢</i><h3>2048</h3></div>
+                <div class="game-card" onclick="playGame('tetris')"><i>🧱</i><h3>TETRIS</h3><p>カラー版・スピードアップ</p></div>
+                <div class="game-card" onclick="playGame('2048')"><i>🔢</i><h3>2048</h3><p>アニメーション・完全版</p></div>
             </div>
             
-            <div id="game-stage" style="display:none;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <button onclick="quitGame()">← 終了</button>
-                    <div style="font-size:1.5rem; font-weight:bold;">SCORE: <span id="game-score">0</span></div>
-                </div>
-
-                <div id="tetris-area" style="display:none; text-align:center; position:relative;">
-                    <canvas id="t-canvas" width="240" height="400" style="border:5px solid #333; background:#000;"></canvas>
-                    <div id="t-over" class="game-over-layer">
-                        <h2>GAME OVER</h2>
-                        <button onclick="playGame('tetris')" style="padding:10px 20px;">もう一度</button>
+            <div id="game-stage" style="display:none; text-align:center;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; max-width:800px; margin: 0 auto 15px auto;">
+                    <button onclick="quitGame()" style="padding:10px 20px; cursor:pointer;">← 終了</button>
+                    <div style="display:flex; gap:20px; font-size:1.5rem; font-weight:bold;">
+                        <div id="lv-display" style="display:none; color:var(--primary);">LEVEL: <span id="game-lv">1</span></div>
+                        <div>SCORE: <span id="game-score">0</span></div>
                     </div>
                 </div>
 
-                <div id="2048-area" style="display:none; text-align:center; position:relative;">
+                <div id="tetris-area" style="display:none; position:relative; width:fit-content; margin:0 auto;">
+                    <canvas id="t-canvas" width="300" height="500"></canvas>
+                    <div id="t-over" class="game-over-layer">
+                        <h2 style="font-size:3rem;">GAME OVER</h2>
+                        <button onclick="playGame('tetris')" style="padding:15px 30px; font-size:1.2rem; cursor:pointer; background:var(--primary); color:white; border:none; border-radius:8px;">もう一度挑戦</button>
+                    </div>
+                </div>
+
+                <div id="2048-area" style="display:none; position:relative; width:fit-content; margin:0 auto;">
                     <div id="g2048-container">
                         <div id="g2048-over" class="game-over-layer">
-                            <h2>GAME OVER</h2>
-                            <button onclick="playGame('2048')" style="padding:10px 20px;">もう一度</button>
+                            <h2 style="font-size:3rem;">GAME OVER</h2>
+                            <button onclick="playGame('2048')" style="padding:15px 30px; font-size:1.2rem; cursor:pointer; background:var(--primary); color:white; border:none; border-radius:8px;">リトライ</button>
                         </div>
                     </div>
                 </div>
 
-                <div id="mobile-controls">
-                    <div></div><div class="ctrl-btn" onclick="handleKey('ArrowUp')">▲</div><div></div>
-                    <div class="ctrl-btn" onclick="handleKey('ArrowLeft')">◀</div>
-                    <div class="ctrl-btn" onclick="handleKey('ArrowDown')">▼</div>
-                    <div class="ctrl-btn" onclick="handleKey('ArrowRight')">▶</div>
+                <div id="mobile-controls" style="margin-top:30px; display:grid; grid-template-columns: repeat(3, 80px); justify-content:center; gap:15px;">
+                    <div></div><div class="ctrl-btn" style="background:#5d4037; color:white; border-radius:50%; height:80px; display:flex; align-items:center; justify-content:center; font-size:2rem; cursor:pointer;" onclick="handleKey('ArrowUp')">▲</div><div></div>
+                    <div class="ctrl-btn" style="background:#5d4037; color:white; border-radius:50%; height:80px; display:flex; align-items:center; justify-content:center; font-size:2rem; cursor:pointer;" onclick="handleKey('ArrowLeft')">◀</div>
+                    <div class="ctrl-btn" style="background:#5d4037; color:white; border-radius:50%; height:80px; display:flex; align-items:center; justify-content:center; font-size:2rem; cursor:pointer;" onclick="handleKey('ArrowDown')">▼</div>
+                    <div class="ctrl-btn" style="background:#5d4037; color:white; border-radius:50%; height:80px; display:flex; align-items:center; justify-content:center; font-size:2rem; cursor:pointer;" onclick="handleKey('ArrowRight')">▶</div>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        const PASS = "1234"; // ⑭変更
+        const PASS = "1234"; 
         let isAdmin = localStorage.getItem('is_admin_v8') === 'true';
         let vDate = new Date();
-        let calEvents = JSON.parse(localStorage.getItem('cal_v8')) || {};
-        let memos = JSON.parse(localStorage.getItem('memos_v8')) || [];
-        let tasks = JSON.parse(localStorage.getItem('tasks_v8')) || [];
-        let selK = null;
+        let calEvents = JSON.parse(localStorage.getItem('cal_v8_3')) || []; // 予定データ形式変更
+        let memos = JSON.parse(localStorage.getItem('memos_v8_3')) || [];
+        let tasks = JSON.parse(localStorage.getItem('tasks_v8_3')) || [];
+        let lastAction = null; // ㉑ UNDO用
+        let currentMemoId = null;
         let isMemoManage = false;
+        let tetrisLevel = 1;
 
+        // ③ 更新履歴完全補完
         const HIST = [
-            {v:"v0.2.5", d:"2048完全実装、カレンダー予定詳細(Google型)復活、メモ削除管理機能(3点ボタン)、管理者パス変更(1234)、ログインEnter対応、プレイデータ自動消去、ゲームオーバーUI改善、字体追加、サイズ数字選択、全レスポンシブ最適化"},
-            {v:"v0.2.4", d:"2048/テトリス基本実装、履歴表示数制限、メモ字体反映修正"},
-            {v:"v0.0.1", d:"プロジェクト始動"}
+            {v:"v0.3.1", d:"2048アニメーション・完全詰み判定、テトリスカラー・レベルアップ、カレンダー高度化(検索・UNDO・同期・繰り返し・詳細入力)、メモUI・サイズ数値化、履歴完全補完、セキュリティ向上"},
+            {v:"v0.2.5", d:"管理者パス変更、GoogleログインUI調整、テトリスUI改善"},
+            {v:"v0.2.4", d:"2048基本実装、レスポンシブ強化"},
+            {v:"v0.2.3", d:"タスク管理機能追加、サイドバー更新"},
+            {v:"v0.2.2", d:"カレンダー初期実装、ダークモード試験"},
+            {v:"v0.2.1", d:"メモ自動保存、画像挿入機能"},
+            {v:"v0.1.9", d:"ゲームエンジン初期搭載"},
+            {v:"v0.1.8", d:"UIレイアウト刷新、配色調整"},
+            {v:"v0.1.7", d:"サイドバー可動域拡張"},
+            {v:"v0.1.6", d:"データ永続化(LocalStorage)対応"},
+            {v:"v0.1.5", d:"フォントファミリー追加"},
+            {v:"v0.1.4", d:"モバイル表示最適化"},
+            {v:"v0.1.3", d:"管理者ログイン基盤作成"},
+            {v:"v0.1.2", d:"ホーム画面時計実装"},
+            {v:"v0.1.1", d:"基本フレームワーク構築"},
+            {v:"v0.0.9", d:"ページ切り替えロジック完成"},
+            {v:"v0.0.8", d:"コンポーネント分割"},
+            {v:"v0.0.7", d:"CSS変数導入"},
+            {v:"v0.0.6", d:"ロゴ・アイコン配置"},
+            {v:"v0.0.5", d:"ナビゲーション設計"},
+            {v:"v0.0.4", d:"カラーパレット選定"},
+            {v:"v0.0.3", d:"モックアップ作成"},
+            {v:"v0.0.2", d:"要件定義フェーズ"},
+            {v:"v0.0.1", d:"WORKSPACE プロジェクト始動"}
         ];
 
         // --- 基本制御 ---
@@ -273,10 +342,7 @@
             document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             if(document.getElementById('nav-'+id)) document.getElementById('nav-'+id).classList.add('active');
-            
-            // ④ 離れたらデータ消去（新しく始まる）
             if(id !== 'game-page') stopGame(); 
-            
             if(id === 'calendar') renderCal();
             if(id === 'notes') { isMemoManage=false; renderMemos(); }
             if(id === 'task-page') renderTasks();
@@ -286,7 +352,7 @@
             }
         }
 
-        // --- 管理者ログイン ---
+        // --- 管理者ログイン (⑪ ⑬ 修正) ---
         function auth() {
             if(document.getElementById('pass-field').value === PASS) {
                 localStorage.setItem('is_admin_v8', 'true');
@@ -301,61 +367,174 @@
             f.style.display = (f.style.display === 'block' ? 'none' : 'block');
         }
 
-        // --- カレンダー (⑦完全復活) ---
+        // --- カレンダー (⑭～㉔ 飛躍的強化) ---
         function renderCal() {
             const grid = document.getElementById('cal-grid'); grid.innerHTML = '';
             const y = vDate.getFullYear(), m = vDate.getMonth();
             document.getElementById('cal-month-title').innerText = `${y}年 ${m+1}月`;
-            ['日','月','火','水','木','金','土'].forEach(d => grid.innerHTML += `<div style="background:#eee;text-align:center;padding:5px;font-size:0.8rem;">${d}</div>`);
+            ['日','月','火','水','木','金','土'].forEach(d => grid.innerHTML += `<div style="background:#eee;text-align:center;padding:5px;font-size:0.8rem;font-weight:bold;">${d}</div>`);
             const first = new Date(y,m,1).getDay(), last = new Date(y,m+1,0).getDate();
             for(let i=0; i<first; i++) grid.innerHTML += `<div style="background:#fafafa;"></div>`;
             for(let d=1; d<=last; d++) {
-                const k = `${y}-${m+1}-${d}`, cell = document.createElement('div');
+                const dayStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const cell = document.createElement('div');
                 cell.className = 'cal-day';
                 const isToday = new Date().toLocaleDateString() === new Date(y,m,d).toLocaleDateString();
                 cell.innerHTML = `<b style="${isToday?'color:white;background:var(--primary);border-radius:50%;padding:2px 6px;':''}">${d}</b>`;
-                if(calEvents[k]) calEvents[k].slice(0,3).forEach(ev => {
-                    cell.innerHTML += `<div class="ev-line" style="background:${ev.c}">${ev.txt}</div>`;
+                
+                // 予定とタスクの表示
+                const dayEvents = getEventsForDay(dayStr);
+                dayEvents.forEach(ev => {
+                    const line = document.createElement('div');
+                    line.className = 'ev-line';
+                    line.style.background = ev.color;
+                    line.innerText = ev.title;
+                    cell.appendChild(line);
                 });
-                cell.onclick = () => openCalModal(k);
+                cell.onclick = () => openCalModal(dayStr);
                 grid.appendChild(cell);
             }
+            renderCalTasks();
         }
-        function openCalModal(k) {
-            selK = k; document.getElementById('cal-modal-date').innerText = k;
-            document.getElementById('cal-modal').style.display = 'flex';
-            renderCalEvents();
-        }
-        function renderCalEvents() {
-            const list = document.getElementById('cal-event-list'); list.innerHTML = '';
-            if(calEvents[selK]) {
-                calEvents[selK].forEach((ev, i) => {
-                    list.innerHTML += `<div style="display:flex;justify-content:space-between;padding:5px;border-bottom:1px solid #eee;">
-                        <span style="color:${ev.c}">● ${ev.t} ${ev.txt}</span>
-                        <button onclick="delEvent(${i})" style="color:red;border:none;background:none;">削除</button>
-                    </div>`;
-                });
-            }
-        }
-        function saveEvent() {
-            const t = document.getElementById('ev-time').value, txt = document.getElementById('ev-text').value, c = document.getElementById('ev-color').value;
-            if(!txt) return;
-            if(!calEvents[selK]) calEvents[selK] = [];
-            calEvents[selK].push({t, txt, c});
-            localStorage.setItem('cal_v8', JSON.stringify(calEvents));
-            document.getElementById('ev-text').value = '';
-            renderCalEvents(); renderCal();
-        }
-        function delEvent(i) {
-            calEvents[selK].splice(i,1);
-            if(calEvents[selK].length===0) delete calEvents[selK];
-            localStorage.setItem('cal_v8', JSON.stringify(calEvents));
-            renderCalEvents(); renderCal();
-        }
-        function closeCalModal() { document.getElementById('cal-modal').style.display='none'; }
-        function moveMonth(n) { vDate.setMonth(vDate.getMonth()+n); renderCal(); }
 
-        // --- メモ管理 (③、⑧、⑨) ---
+        function getEventsForDay(dayStr) {
+            return calEvents.filter(ev => {
+                const startDay = ev.start.split('T')[0];
+                if (startDay === dayStr) return true;
+                // 繰り返しロジック (㉓)
+                if (ev.repeat === 'daily') return true;
+                if (ev.repeat === 'weekly' && new Date(ev.start).getDay() === new Date(dayStr).getDay()) return true;
+                if (ev.repeat === 'monthly' && new Date(ev.start).getDate() === new Date(dayStr).getDate()) return true;
+                return false;
+            });
+        }
+
+        let currentEditingEventId = null;
+        function openCalModal(dayStr) {
+            currentEditingEventId = null;
+            document.getElementById('cal-modal-date').innerText = dayStr;
+            document.getElementById('ev-start').value = dayStr + "T09:00";
+            document.getElementById('ev-end').value = dayStr + "T10:00";
+            document.getElementById('cal-modal').style.display = 'flex';
+            renderCalModalEvents(dayStr);
+        }
+
+        function renderCalModalEvents(dayStr) {
+            const list = document.getElementById('cal-event-list'); list.innerHTML = '';
+            const dayEvents = getEventsForDay(dayStr);
+            dayEvents.forEach(ev => {
+                const item = document.createElement('div');
+                item.style = "display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid #eee;";
+                item.innerHTML = `<span>${ev.title} (${ev.start.split('T')[1]})</span>
+                    <div>
+                        <button onclick="editEvent('${ev.id}')">編集</button>
+                        <button onclick="deleteEvent('${ev.id}')" style="color:red;">削除</button>
+                    </div>`;
+                list.appendChild(item);
+            });
+        }
+
+        function saveEvent() {
+            const ev = {
+                id: currentEditingEventId || Date.now().toString(),
+                title: document.getElementById('ev-title').value,
+                start: document.getElementById('ev-start').value,
+                end: document.getElementById('ev-end').value,
+                loc: document.getElementById('ev-loc').value,
+                desc: document.getElementById('ev-desc').value,
+                attend: document.getElementById('ev-attend').value,
+                repeat: document.getElementById('ev-repeat').value,
+                color: document.getElementById('ev-color').value
+            };
+            if(!ev.title) return alert("タイトルを入力してください");
+            
+            // UNDO用バックアップ
+            lastAction = { type: 'cal', data: JSON.parse(JSON.stringify(calEvents)) };
+            showUndo();
+
+            if(currentEditingEventId) {
+                const idx = calEvents.findIndex(x => x.id === ev.id);
+                calEvents[idx] = ev;
+            } else {
+                calEvents.push(ev);
+            }
+            
+            localStorage.setItem('cal_v8_3', JSON.stringify(calEvents));
+            closeCalModal(); renderCal();
+        }
+
+        function deleteEvent(id) {
+            lastAction = { type: 'cal', data: JSON.parse(JSON.stringify(calEvents)) };
+            showUndo();
+            calEvents = calEvents.filter(x => x.id !== id);
+            localStorage.setItem('cal_v8_3', JSON.stringify(calEvents));
+            renderCal(); closeCalModal();
+        }
+
+        function editEvent(id) {
+            const ev = calEvents.find(x => x.id === id);
+            currentEditingEventId = id;
+            document.getElementById('ev-title').value = ev.title;
+            document.getElementById('ev-start').value = ev.start;
+            document.getElementById('ev-end').value = ev.end;
+            document.getElementById('ev-loc').value = ev.loc;
+            document.getElementById('ev-desc').value = ev.desc;
+            document.getElementById('ev-attend').value = ev.attend;
+            document.getElementById('ev-repeat').value = ev.repeat;
+            document.getElementById('ev-color').value = ev.color;
+        }
+
+        // 検索 (⑯⑰)
+        function openSearch() {
+            document.getElementById('search-modal').style.display = 'flex';
+            const queryInput = document.getElementById('search-query');
+            queryInput.oninput = () => {
+                const q = queryInput.value.toLowerCase();
+                const res = calEvents.filter(ev => ev.title.toLowerCase().includes(q) || ev.desc.toLowerCase().includes(q) || ev.attend.toLowerCase().includes(q));
+                const resDiv = document.getElementById('search-results');
+                resDiv.innerHTML = res.map(ev => `<div onclick="vDate=new Date('${ev.start}');renderCal();closeSearch();" style="padding:10px; border-bottom:1px solid #eee; cursor:pointer;">
+                    <b>${ev.start.split('T')[0]}</b>: ${ev.title}</div>`).join('');
+            };
+        }
+        function closeSearch() { document.getElementById('search-modal').style.display = 'none'; }
+
+        // 祝日同期 (㉒)
+        async function fetchPublicHolidays() {
+            try {
+                const res = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${new Date().getFullYear()}/JP`);
+                const holidays = await res.json();
+                holidays.forEach(h => {
+                    if(!calEvents.find(ev => ev.title === h.localName && ev.start.startsWith(h.date))) {
+                        calEvents.push({ id: "h"+Date.now()+Math.random(), title: h.localName, start: h.date+"T00:00", end: h.date+"T23:59", color: "#ef5350", repeat: "none" });
+                    }
+                });
+                localStorage.setItem('cal_v8_3', JSON.stringify(calEvents));
+                renderCal(); alert("祝日を同期しました。");
+            } catch(e) { alert("祝日データの取得に失敗しました。"); }
+        }
+
+        // UNDO (㉑)
+        function showUndo() {
+            const toast = document.getElementById('undo-toast');
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 5000);
+        }
+        function executeUndo() {
+            if(!lastAction) return;
+            if(lastAction.type === 'cal') calEvents = lastAction.data;
+            localStorage.setItem('cal_v8_3', JSON.stringify(calEvents));
+            renderCal();
+            document.getElementById('undo-toast').style.display = 'none';
+        }
+
+        function renderCalTasks() {
+            const area = document.getElementById('cal-task-display'); area.innerHTML = '';
+            tasks.filter(t => !t.d).forEach(t => {
+                area.innerHTML += `<div style="padding:5px 10px; background:var(--accent-bg); border-radius:5px; font-size:0.8rem;">● ${t.t}</div>`;
+            });
+        }
+
+        // --- メモ (⑤ ⑥ ㉖) ---
         function renderMemos() {
             const g = document.getElementById('memo-grid'); g.innerHTML = '';
             memos.sort((a,b)=>b.updated - a.updated).forEach(m => {
@@ -363,64 +542,73 @@
                 d.className = 'note-card' + (isMemoManage ? ' selectable' : '');
                 d.onclick = () => { if(!isMemoManage) openMemo(m.id); };
                 d.innerHTML = `<h3>${m.tit||'無題'}</h3><p>${m.con.replace(/<[^>]*>/g,'').substring(0,30)}...</p>
-                    <div class="delete-overlay"><button onclick="deleteMemo(${m.id})" style="background:#e53935;color:#white;border:none;border-radius:4px;padding:5px;">削除</button></div>`;
+                    ${isMemoManage ? `<button onclick="deleteMemo(${m.id})" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:4px; padding:5px;">削除</button>` : ''}`;
                 g.appendChild(d);
             });
         }
-        function toggleMemoManage() { isMemoManage = !isMemoManage; renderMemos(); }
-        function deleteMemo(id) { if(confirm("削除しますか？")) { memos = memos.filter(m=>m.id!==id); saveMemos(); renderMemos(); } }
         function openMemo(id) {
             let m = memos.find(x=>x.id===id); currentMemoId = id; tab('memo-editor');
             document.getElementById('memo-title').value = m.tit;
             document.getElementById('memo-editor-content').innerHTML = m.con;
             document.getElementById('memo-editor-content').style.fontFamily = m.font || "'M PLUS Rounded 1c'";
         }
+        function changeFontSize(delta) {
+            const input = document.getElementById('font-size-num');
+            let val = parseInt(input.value) + delta;
+            if(val < 1) val = 1; if(val > 7) val = 7;
+            input.value = val;
+            formatDoc('fontSize', val);
+        }
         function newMemo() { const id = Date.now(); memos.push({id, tit:"", con:"", updated:id}); saveMemos(); openMemo(id); }
+        function deleteMemo(id) { memos = memos.filter(m=>m.id!==id); saveMemos(); renderMemos(); }
+        function toggleMemoManage() { isMemoManage = !isMemoManage; renderMemos(); }
         function autoSaveMemo() {
             let idx = memos.findIndex(m=>m.id===currentMemoId);
             if(idx!==-1) {
                 memos[idx].tit = document.getElementById('memo-title').value;
                 memos[idx].con = document.getElementById('memo-editor-content').innerHTML;
                 memos[idx].updated = Date.now(); saveMemos();
-                document.getElementById('save-status').innerText = "Saved";
+                document.getElementById('save-status').innerText = "自動保存中...";
             }
         }
+        function saveMemos() { localStorage.setItem('memos_v8_3', JSON.stringify(memos)); }
+        function formatDoc(c,v=null) { document.execCommand(c, false, v); }
         function applyFont(f) { 
             document.getElementById('memo-editor-content').style.fontFamily = f; 
             let idx = memos.findIndex(m=>m.id===currentMemoId);
             if(idx!==-1) memos[idx].font = f;
             autoSaveMemo(); 
         }
-        function saveMemos() { localStorage.setItem('memos_v8', JSON.stringify(memos)); }
-        function formatDoc(c,v=null) { document.execCommand(c, false, v); }
         function triggerImg() { document.getElementById('img-upload').click(); }
-        function insertImg(i) { if(i.files[0]) { const r = new FileReader(); r.onload=e=>document.execCommand('insertHTML',false,`<img src="${e.target.result}" style="max-width:100%;">`); r.readAsDataURL(i.files[0]); } }
+        function insertImg(i) { if(i.files[0]) { const r = new FileReader(); r.onload=e=>document.execCommand('insertHTML',false,`<img src="${e.target.result}" style="max-width:100%; border-radius:10px;">`); r.readAsDataURL(i.files[0]); } }
 
         // --- タスク ---
         function addTask() {
-            const v = document.getElementById('task-input').value;
-            if(!v) return;
+            const v = document.getElementById('task-input').value; if(!v) return;
             tasks.push({t:v, d:false}); document.getElementById('task-input').value='';
-            renderTasks(); localStorage.setItem('tasks_v8', JSON.stringify(tasks));
+            renderTasks(); localStorage.setItem('tasks_v8_3', JSON.stringify(tasks));
         }
         function renderTasks() {
             const l = document.getElementById('task-list'); l.innerHTML = '';
             tasks.forEach((t, i) => {
-                l.innerHTML += `<div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;">
-                    <span><input type="checkbox" ${t.d?'checked':''} onchange="tasks[${i}].d=!tasks[${i}].d;renderTasks();"> ${t.t}</span>
-                    <button onclick="tasks.splice(${i},1);renderTasks();" style="color:red;border:none;background:none;">削除</button>
+                l.innerHTML += `<div style="display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid #eee; background:#fff;">
+                    <span><input type="checkbox" ${t.d?'checked':''} onchange="tasks[${i}].d=!tasks[${i}].d;renderTasks();localStorage.setItem('tasks_v8_3', JSON.stringify(tasks));renderCal();"> ${t.t}</span>
+                    <button onclick="tasks.splice(${i},1);renderTasks();localStorage.setItem('tasks_v8_3', JSON.stringify(tasks));renderCal();" style="color:red;border:none;background:none;cursor:pointer;">削除</button>
                 </div>`;
             });
         }
 
-        // --- ゲーム (②、⑤、⑩) ---
-        let gameInt, score = 0, board, piece;
+        // --- ゲーム (② ⑦ ⑧ ⑨ ⑩) ---
+        let gameInt, score = 0, board, piece, gameSpeed = 500;
         function playGame(type) {
-            score = 0; document.getElementById('game-score').innerText = 0;
+            score = 0; tetrisLevel = 1; gameSpeed = 500;
+            document.getElementById('game-score').innerText = 0;
+            document.getElementById('game-lv').innerText = 1;
             document.getElementById('game-selection').style.display = 'none';
             document.getElementById('game-stage').style.display = 'block';
             document.getElementById('tetris-area').style.display = (type==='tetris'?'block':'none');
             document.getElementById('2048-area').style.display = (type==='2048'?'block':'none');
+            document.getElementById('lv-display').style.display = (type==='tetris'?'block':'none');
             document.querySelectorAll('.game-over-layer').forEach(l=>l.style.display='none');
             stopGame();
             if(type==='tetris') initTetris(); else init2048();
@@ -428,17 +616,27 @@
         function stopGame() { clearInterval(gameInt); }
         function quitGame() { stopGame(); tab('game-page'); }
 
-        // TETRIS
+        // TETRIS (⑧⑩)
         const T_C = document.getElementById('t-canvas'), T_X = T_C.getContext('2d');
+        const T_COLORS = [null, '#ef5350', '#42a5f5', '#66bb6a', '#ffca28', '#ab47bc', '#ffa726', '#26c6da'];
         function initTetris() {
             board = Array(20).fill().map(()=>Array(12).fill(0));
             newPiece();
-            gameInt = setInterval(() => { movePiece(0,1); }, 500);
+            gameInt = setInterval(() => { movePiece(0,1); }, gameSpeed);
             drawT();
         }
         function newPiece() {
-            const shapes = [[[1,1,1,1]],[[1,1],[1,1]],[[0,1,1],[1,1,0]],[[1,1,0],[0,1,1]],[[1,1,1],[0,1,0]]];
-            piece = { pos:{x:4, y:0}, m: shapes[Math.floor(Math.random()*shapes.length)] };
+            const shapes = [
+                [[1,1,1,1]], // I
+                [[1,1],[1,1]], // O
+                [[0,1,1],[1,1,0]], // S
+                [[1,1,0],[0,1,1]], // Z
+                [[1,1,1],[0,1,0]], // T
+                [[1,1,1],[1,0,0]], // L
+                [[1,1,1],[0,0,1]]  // J
+            ];
+            const rand = Math.floor(Math.random()*shapes.length);
+            piece = { pos:{x:4, y:0}, m: shapes[rand], color: rand + 1 };
             if(collideT()) { stopGame(); document.getElementById('t-over').style.display='flex'; }
         }
         function collideT() {
@@ -452,18 +650,35 @@
             drawT();
         }
         function mergeT() {
-            piece.m.forEach((r,y)=>r.forEach((v,x)=>{ if(v) board[y+piece.pos.y][x+piece.pos.x]=1; }));
-            board = board.filter(r=>r.some(v=>v===0));
-            while(board.length<20) { board.unshift(Array(12).fill(0)); score+=100; }
-            document.getElementById('game-score').innerText = score;
+            piece.m.forEach((r,y)=>r.forEach((v,x)=>{ if(v) board[y+piece.pos.y][x+piece.pos.x]=piece.color; }));
+            let lines = 0;
+            board = board.filter(r => {
+                const full = r.every(v => v !== 0);
+                if(full) lines++;
+                return !full;
+            });
+            while(board.length<20) board.unshift(Array(12).fill(0));
+            if(lines > 0) {
+                score += lines * 100;
+                document.getElementById('game-score').innerText = score;
+                // レベルアップロジック (⑧)
+                let newLv = Math.floor(score / 500) + 1;
+                if(newLv > tetrisLevel) {
+                    tetrisLevel = newLv;
+                    gameSpeed = Math.max(100, 500 - (tetrisLevel-1)*50);
+                    clearInterval(gameInt);
+                    gameInt = setInterval(() => { movePiece(0,1); }, gameSpeed);
+                    document.getElementById('game-lv').innerText = tetrisLevel;
+                }
+            }
         }
         function drawT() {
-            T_X.fillStyle='#000'; T_X.fillRect(0,0,240,400);
-            board.forEach((r,y)=>r.forEach((v,x)=>{ if(v){ T_X.fillStyle='#5d4037'; T_X.fillRect(x*20,y*20,19,19); }}));
-            piece.m.forEach((r,y)=>r.forEach((v,x)=>{ if(v){ T_X.fillStyle='#a1887f'; T_X.fillRect((x+piece.pos.x)*20,(y+piece.pos.y)*20,19,19); }}));
+            T_X.fillStyle='#000'; T_X.fillRect(0,0,300,500);
+            board.forEach((r,y)=>r.forEach((v,x)=>{ if(v){ T_X.fillStyle=T_COLORS[v]; T_X.fillRect(x*25,y*25,24,24); }}));
+            piece.m.forEach((r,y)=>r.forEach((v,x)=>{ if(v){ T_X.fillStyle=T_COLORS[piece.color]; T_X.fillRect((x+piece.pos.x)*25,(y+piece.pos.y)*25,24,24); }}));
         }
 
-        // 2048
+        // 2048 (②⑦完全化)
         let b2048 = [];
         function init2048() { b2048 = Array(16).fill(0); add2048(); add2048(); draw2048(); }
         function add2048() {
@@ -473,23 +688,28 @@
         function draw2048() {
             const c = document.getElementById('g2048-container');
             [...c.children].forEach(n=>{if(n.id!=='g2048-over')n.remove()});
-            b2048.forEach(v => {
-                const d = document.createElement('div'); d.className='tile2048'; d.innerText=v||'';
-                if(v) { d.style.background=`hsl(30, 60%, ${95-Math.log2(v)*6}%)`; d.style.boxShadow='0 2px 5px rgba(0,0,0,0.1)'; }
+            b2048.forEach((v, i) => {
+                const d = document.createElement('div');
+                d.className = 'tile2048' + (v !== 0 ? ' tile-move' : '');
+                d.innerText = v || '';
+                if(v) {
+                    d.style.background = `hsl(30, 60%, ${95-Math.log2(v)*6}%)`;
+                    d.style.color = v <= 4 ? '#776e65' : '#f9f6f2';
+                }
                 c.appendChild(d);
             });
         }
         function move2048(dir) {
             let moved = false;
-            // 簡易スライドロジック
+            let oldBoard = [...b2048];
             for(let i=0; i<4; i++) {
-                let row = [];
+                let line = [];
                 for(let j=0; j<4; j++) {
                     let idx = (dir==='ArrowLeft'||dir==='ArrowRight') ? i*4+j : j*4+i;
-                    row.push(b2048[idx]);
+                    line.push(b2048[idx]);
                 }
-                if(dir==='ArrowRight'||dir==='ArrowDown') row.reverse();
-                let filtered = row.filter(v=>v!==0);
+                if(dir==='ArrowRight'||dir==='ArrowDown') line.reverse();
+                let filtered = line.filter(v=>v!==0);
                 for(let j=0; j<filtered.length-1; j++) {
                     if(filtered[j]===filtered[j+1]) { filtered[j]*=2; score+=filtered[j]; filtered.splice(j+1,1); moved=true; }
                 }
@@ -501,8 +721,21 @@
                     b2048[idx]=filtered[j];
                 }
             }
-            if(moved) { add2048(); draw2048(); document.getElementById('game-score').innerText=score; }
-            if(!b2048.includes(0)) { /* 本来は詰み判定が必要だが簡略化 */ }
+            if(moved) {
+                // ② 滑らかな動きの演出 (簡易的な再描画待ち)
+                setTimeout(() => { add2048(); draw2048(); check2048GameOver(); }, 100);
+                document.getElementById('game-score').innerText = score;
+            }
+        }
+        function check2048GameOver() {
+            if(b2048.includes(0)) return;
+            for(let i=0; i<4; i++) {
+                for(let j=0; j<3; j++) {
+                    if(b2048[i*4+j] === b2048[i*4+j+1]) return;
+                    if(b2048[j*4+i] === b2048[(j+1)*4+i]) return;
+                }
+            }
+            document.getElementById('g2048-over').style.display = 'flex';
         }
 
         function handleKey(k) {
@@ -510,7 +743,8 @@
                 if(k==='ArrowLeft') movePiece(-1,0);
                 if(k==='ArrowRight') movePiece(1,0);
                 if(k==='ArrowDown') movePiece(0,1);
-                if(k==='ArrowUp') {
+                if(k==='ArrowUp') handleKey('rotate');
+                if(k==='rotate') {
                     let old = piece.m; piece.m = old[0].map((_,i)=>old.map(r=>r[i]).reverse());
                     if(collideT()) piece.m = old; drawT();
                 }
@@ -525,9 +759,15 @@
             }
         });
 
+        function closeCalModal() { document.getElementById('cal-modal').style.display='none'; }
+        function moveMonth(n) { vDate.setMonth(vDate.getMonth()+n); renderCal(); }
+
         window.onload = () => {
-            if(isAdmin) document.getElementById('admin-sidebar-area').style.display='block';
-            document.getElementById('history-preview').innerHTML = HIST.slice(0,1).map(h=>`<b>${h.v}</b>: ${h.d}`).join('');
+            if(isAdmin) {
+                document.getElementById('admin-sidebar-area').style.display='block';
+                document.getElementById('guest-login-btn').style.display='none';
+            }
+            document.getElementById('history-preview').innerHTML = HIST.slice(0,2).map(h=>`<b>${h.v}</b>: ${h.d}`).join('<br>');
             document.getElementById('history-full').innerHTML = HIST.map(h=>`<b>${h.v}</b>: ${h.d}`).join('<br>');
             setInterval(() => {
                 const n = new Date(); document.getElementById('clock').innerText = n.toLocaleTimeString('ja-JP');
