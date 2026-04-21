@@ -256,7 +256,7 @@
 
         <div id="game-page" class="page">
             <div id="game-selection">
-                <div class="game-card" onclick="playGame('tetris')"><i>🧱</i><h3>TETRIS</h3><p>カラー版・スピードアップ</p></div>
+                <div class="game-card" onclick="playGame('ブロックパズル')"><i>🧱</i><h3>ブロックパズル</h3><p>カラー版・スピードアップ</p></div>
                 <div class="game-card" onclick="playGame('2048')"><i>🔢</i><h3>2048</h3><p>アニメーション・完全版</p></div>
             </div>
             
@@ -269,11 +269,11 @@
                     </div>
                 </div>
 
-                <div id="tetris-area" style="display:none; position:relative; width:fit-content; margin:0 auto;">
+                <div id="ブロックパズル-area" style="display:none; position:relative; width:fit-content; margin:0 auto;">
                     <canvas id="t-canvas" width="300" height="500"></canvas>
                     <div id="t-over" class="game-over-layer">
                         <h2 style="font-size:3rem;">GAME OVER</h2>
-                        <button onclick="playGame('tetris')" style="padding:15px 30px; font-size:1.2rem; cursor:pointer; background:var(--primary); color:white; border:none; border-radius:8px;">もう一度挑戦</button>
+                        <button onclick="playGame('ブロックパズル')" style="padding:15px 30px; font-size:1.2rem; cursor:pointer; background:var(--primary); color:white; border:none; border-radius:8px;">もう一度挑戦</button>
                     </div>
                 </div>
 
@@ -306,12 +306,12 @@
         let lastAction = null; // ㉑ UNDO用
         let currentMemoId = null;
         let isMemoManage = false;
-        let tetrisLevel = 1;
+        let ブロックパズルLevel = 1;
 
         // ③ 更新履歴完全補完
         const HIST = [
-            {v:"v0.3.1", d:"2048アニメーション・完全詰み判定、テトリスカラー・レベルアップ、カレンダー高度化(検索・UNDO・同期・繰り返し・詳細入力)、メモUI・サイズ数値化、履歴完全補完、セキュリティ向上"},
-            {v:"v0.2.5", d:"管理者パス変更、GoogleログインUI調整、テトリスUI改善"},
+            {v:"v0.3.1", d:"2048アニメーション・完全詰み判定、ブロックパズル カラー・レベルアップ、カレンダー高度化(検索・UNDO・同期・繰り返し・詳細入力)、メモUI・サイズ数値化、履歴完全補完、セキュリティ向上"},
+            {v:"v0.2.5", d:"管理者パス変更、GoogleログインUI調整、ブロック パズルUI改善"},
             {v:"v0.2.4", d:"2048基本実装、レスポンシブ強化"},
             {v:"v0.2.3", d:"タスク管理機能追加、サイドバー更新"},
             {v:"v0.2.2", d:"カレンダー初期実装、ダークモード試験"},
@@ -601,25 +601,25 @@
         // --- ゲーム (② ⑦ ⑧ ⑨ ⑩) ---
         let gameInt, score = 0, board, piece, gameSpeed = 500;
         function playGame(type) {
-            score = 0; tetrisLevel = 1; gameSpeed = 500;
+            score = 0; ブロックパズルLevel = 1; gameSpeed = 500;
             document.getElementById('game-score').innerText = 0;
             document.getElementById('game-lv').innerText = 1;
             document.getElementById('game-selection').style.display = 'none';
             document.getElementById('game-stage').style.display = 'block';
-            document.getElementById('tetris-area').style.display = (type==='tetris'?'block':'none');
+            document.getElementById('ブロックパズル-area').style.display = (type==='ブロックパズル'?'block':'none');
             document.getElementById('2048-area').style.display = (type==='2048'?'block':'none');
-            document.getElementById('lv-display').style.display = (type==='tetris'?'block':'none');
+            document.getElementById('lv-display').style.display = (type==='ブロックパズル'?'block':'none');
             document.querySelectorAll('.game-over-layer').forEach(l=>l.style.display='none');
             stopGame();
-            if(type==='tetris') initTetris(); else init2048();
+            if(type==='ブロックパズル') initブロックパズル(); else init2048();
         }
         function stopGame() { clearInterval(gameInt); }
         function quitGame() { stopGame(); tab('game-page'); }
 
-        // TETRIS (⑧⑩)
+        // ブロックパズル (⑧⑩)
         const T_C = document.getElementById('t-canvas'), T_X = T_C.getContext('2d');
         const T_COLORS = [null, '#ef5350', '#42a5f5', '#66bb6a', '#ffca28', '#ab47bc', '#ffa726', '#26c6da'];
-        function initTetris() {
+        function initブロックパズル() {
             board = Array(20).fill().map(()=>Array(12).fill(0));
             newPiece();
             gameInt = setInterval(() => { movePiece(0,1); }, gameSpeed);
@@ -663,12 +663,12 @@
                 document.getElementById('game-score').innerText = score;
                 // レベルアップロジック (⑧)
                 let newLv = Math.floor(score / 500) + 1;
-                if(newLv > tetrisLevel) {
-                    tetrisLevel = newLv;
-                    gameSpeed = Math.max(100, 500 - (tetrisLevel-1)*50);
+                if(newLv > ブロックパズルLevel) {
+                    ブロックパズルLevel = newLv;
+                    gameSpeed = Math.max(100, 500 - (ブロックパズルLevel-1)*50);
                     clearInterval(gameInt);
                     gameInt = setInterval(() => { movePiece(0,1); }, gameSpeed);
-                    document.getElementById('game-lv').innerText = tetrisLevel;
+                    document.getElementById('game-lv').innerText = ブロックパズルLevel;
                 }
             }
         }
@@ -739,7 +739,7 @@
         }
 
         function handleKey(k) {
-            if(document.getElementById('tetris-area').style.display==='block') {
+            if(document.getElementById('ブロックパズル-area').style.display==='block') {
                 if(k==='ArrowLeft') movePiece(-1,0);
                 if(k==='ArrowRight') movePiece(1,0);
                 if(k==='ArrowDown') movePiece(0,1);
