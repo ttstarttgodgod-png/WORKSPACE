@@ -3,19 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WORKSPACE v0.5.3</title>
+    <title>WORKSPACE v0.6.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@400;700&family=Sawarabi+Mincho&family=Noto+Sans+JP&family=Sawarabi+Gothic&family=Shippori+Mincho&family=Yuji+Syuku&family=Zen+Kaku+Gothic+New&family=Hina+Mincho&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base: #ece2d8; --sidebar: #3e2723; --primary: #5d4037;
             --accent-bg: #efebe9; --text-main: #3e2723; --border: #a1887f;
             --line-color: #d1e5f0; --shadow: 0 10px 25px rgba(62, 39, 35, 0.15);
+            --bg-dark: #1e1e1e;
+--text-dark: #f5f5f5;
         }
         body {
-            background: var(--bg-base); color: var(--text-main);
-            font-family: 'M PLUS Rounded 1c', sans-serif;
-            margin: 0; display: flex; height: 100vh; overflow: hidden;
-        }
+    background: var(--bg-base);
+    color: var(--text-main);
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+
+    transition:
+        background 0.3s,
+        color 0.3s;
+}
 
         /* サイドバー */
         nav { width: 250px; background: var(--sidebar); display: flex; flex-direction: column; padding: 20px; color: #efebe9; flex-shrink: 0; transition: width 0.3s; z-index: 100; }
@@ -207,13 +217,75 @@
         #game-selection { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
         .game-card { background: white; padding: 40px 20px; border-radius: 20px; border: 3px solid var(--primary); cursor: pointer; text-align: center; transition: 0.3s; box-shadow: var(--shadow); }
         .game-card:hover { transform: translateY(-10px); background: var(--accent-bg); }
+        .study-btn {
+
+    padding: 30px 20px;
+
+    border: none;
+
+    border-radius: 20px;
+
+    background: linear-gradient(
+        135deg,
+        #6d4c41,
+        #8d6e63
+    );
+
+    color: white;
+
+    font-size: 1.2rem;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+
+    box-shadow: var(--shadow);
+}
+
+.study-btn:hover {
+
+    transform: translateY(-6px);
+
+    box-shadow:
+        0 12px 25px rgba(0,0,0,0.2);
+}
+
+.study-tool-card {
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    border: 2px solid var(--border);
+
+    box-shadow: var(--shadow);
+
+    transition: 0.25s;
+}
+
+.study-tool-card:hover {
+
+    transform: translateY(-5px);
+}
+
+body.dark .study-tool-card {
+
+    background: #2d2d2d;
+}
         .game-card i { font-size: 4rem; display: block; margin-bottom: 15px; }
 
         #g2048-container { background: #bbada0; width: 450px; height: 450px; border-radius: 10px; padding: 15px; position: relative; margin: 0 auto; }
         .tile2048 {
             width: 95px; height: 95px; background: rgba(238, 228, 218, 0.35); border-radius: 5px;
             display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 2rem;
-            position: absolute; transition: all 0.12s ease-in-out; /* ⑭ 移動アニメーション */
+            position: absolute; transition:
+    left 0.12s ease,
+    top 0.12s ease,
+    transform 0.08s ease; /* ⑭ 移動アニメーション */
         }
 
         #t-canvas { border: 5px solid #333; background: #000; display: block; margin: 0 auto; width: 300px; height: 500px; }
@@ -233,7 +305,7 @@
         /* 共通UI */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
         .modal-content { background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; max-height: 95vh; overflow-y: auto; }
-        .game-over-layer { position: absolute; inset: 0; background: rgba(0,0,0,0.8); color: white; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 200; border-radius: 10px; }
+        .game-over-layer {backdrop-filter: blur(4px); position: absolute; inset: 0; background: rgba(0,0,0,0.8); color: white; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 200; border-radius: 10px; }
 
         /* タスク管理 ⑫ */
         .task-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; background: #fff; }
@@ -241,7 +313,234 @@
         .task-text.completed { text-decoration: line-through; color: #888; }
 
         .undo-toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: #fff; padding: 12px 20px; border-radius: 30px; display: none; z-index: 10000; align-items: center; gap: 10px; box-shadow: var(--shadow); }
-    </style>
+        body.dark {
+    background: #1e1e1e;
+    color: #f5f5f5;
+}
+
+body.dark .card,
+body.dark .modal-content,
+body.dark .note-card,
+body.dark .task-item {
+    background: #2b2b2b;
+    color: #f5f5f5;
+    border-color: #555;
+}
+
+body.dark input,
+body.dark textarea,
+body.dark select {
+    background: #1f1f1f;
+    color: #ffffff;
+    border: 1px solid #666;
+}
+body.dark button {
+    color: white;
+}
+
+body.dark .card-header {
+    background: linear-gradient(to right, #3a3a3a, #2a2a2a);
+    color: #ffffff;
+    border-bottom: 1px solid #555;
+}
+
+body.dark #memo-editor-content {
+    background: #252525;
+    color: white;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+}
+
+body.dark .toolbar-btn {
+    background: #444;
+    color: white;
+    border-color: #666;
+}
+
+body.dark .nav-item {
+    color: #f5f5f5;
+}
+
+body.dark #calendar button,
+body.dark #notes button,
+body.dark #task-page button,
+body.dark #game-page button {
+    color: white;
+}
+
+body.dark #search-results div {
+    color: white;
+}
+
+body.dark #cal-event-list {
+    background: #2a2a2a !important;
+    color: white;
+}
+
+body.dark .modal-content {
+    background: #2b2b2b;
+    color: white;
+}
+
+body.dark .game-card {
+    background: #2d2d2d;
+    color: white;
+}
+
+body.dark .game-card:hover {
+    background: #3b3b3b;
+}
+
+body.dark .ctrl-btn {
+    background: #795548 !important;
+}
+
+body.dark .day-num {
+    color: white;
+}
+
+body.dark #date-string {
+    color: #d7ccc8 !important;
+}
+
+body.dark #clock {
+    color: #ffffff !important;
+}
+
+body.dark .cal-day {
+    background:
+        linear-gradient(to bottom, #383838, #262626);
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+body.dark .cal-day:hover {
+    background: #444;
+    transform: translateY(-2px);
+}
+
+body.dark #memo-search {
+    background: #333 !important;
+    color: white !important;
+}
+
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark p,
+body.dark span,
+body.dark div {
+    color: inherit;
+} 
+body.dark #calendar > div,
+body.dark #notes > div {
+    background: #2c2c2c !important;
+    color: white;
+} 
+/* ===== v0.5.8 Calendar Improve ===== */
+
+.today-cell {
+    position: relative;
+}
+
+.today-cell::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    border: 2px solid #ffcc80;
+
+    border-radius: 14px;
+
+    pointer-events: none;
+
+    box-shadow:
+        0 0 15px rgba(255,204,128,0.5);
+}
+
+.today-number {
+
+    background: #6d4c41 !important;
+
+    color: white !important;
+
+    box-shadow:
+        0 0 12px rgba(255,204,128,0.5);
+}
+
+body.dark #cal-grid {
+
+    background:
+        linear-gradient(
+            145deg,
+            #4e342e,
+            #2a1f1c
+        );
+}
+
+body.dark .cal-day {
+
+    background:
+        linear-gradient(
+            to bottom,
+            #3c3c3c,
+            #272727
+        );
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 2px 6px rgba(0,0,0,0.25);
+}
+
+body.dark .cal-day:hover {
+
+    background:
+        linear-gradient(
+            to bottom,
+            #474747,
+            #353535
+        );
+
+    transform: translateY(-3px);
+}
+
+body.dark .ev-bar {
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+body.dark .modal-content {
+
+    background:
+        linear-gradient(
+            to bottom,
+            #353535,
+            #252525
+        );
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.45);
+}
+
+body.dark #g2048-container {
+    background: #4e342e;
+}
+
+body.dark .tile2048 {
+    border:
+        1px solid rgba(255,255,255,0.08);
+}
+ </style>
 </head>
 <body>
 
@@ -256,7 +555,7 @@
     <h3 id="cal-modal-date" style="border-bottom: 2px solid var(--primary); padding-bottom: 10px;"> 日付詳細 </h3>
     <div id="cal-event-list" style="margin-bottom:15px; max-height:150px; overflow-y:auto; background: #f9f9f9; padding: 10px; border-radius: 8px;"></div>
     
-    <h4 style="margin-top: 20px; color: var(--primary);"> 予定の作成・編集 (⑥初期値設定済み) </h4>
+    <h4 style="margin-top: 20px; color: var(--primary);"> 予定の作成・編集</h4>
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
         <input type="text" id="ev-title" placeholder="予定のタイトルを入力" style="grid-column: span 2; padding:10px; border: 1px solid #ccc; border-radius: 5px;">
         <label style="font-size: 0.8rem;"> 開始時間<input type="datetime-local" id="ev-start" style="width:100%; padding:8px; margin-top:5px;"></label>
@@ -306,7 +605,13 @@
     <div class="nav-item active" id="nav-home" onclick="tab('home')">🏠 <span class="nav-text"> ホーム </span></div>
     <div class="nav-item" id="nav-calendar" onclick="tab('calendar')">📅 <span class="nav-text"> カレンダー </span></div>
     <div class="nav-item" id="nav-notes" onclick="tab('notes')">📒 <span class="nav-text"> メモ </span></div>
-    <div class="nav-item" id="nav-game-page" onclick="tab('game-page')">🎮 <span class="nav-text"> ゲーム </span></div>
+    <div class="nav-item" id="nav-study-page" onclick="tab('study-page')">
+    🧠 <span class="nav-text"> 勉強 </span>
+</div>
+
+<div class="nav-item" id="nav-game-page" onclick="tab('game-page')">
+    🎮 <span class="nav-text"> ゲーム </span>
+</div>
 
     <div class="sidebar-sep-white"></div>
     <div id="admin-sidebar-area" style="display:none;">
@@ -326,6 +631,14 @@
             <div id="date-string" style="font-size:1.5rem; color:#8d6e63;"></div>
         </div></div>
         <div class="card">
+    <div class="card-header">📅 今日の予定</div>
+    <div class="card-body">
+        <div id="today-events">
+            今日の予定はありません
+        </div>
+    </div>
+</div>
+        <div class="card">
             <div class="card-header"> 最新の更新 (Top 2) </div>
             <div class="card-body">
                 <div id="history-preview"></div>
@@ -335,7 +648,7 @@
     </div>
 
     <div id="history-page" class="page">
-        <h2> 更新履歴一覧 (v0.0.1～v0.4.1) </h2>
+        <h2> 更新履歴一覧 (v0.0.1～v0.6.2) </h2>
         <div class="card"><div class="card-body" id="history-full" style="line-height:1.8; font-size:0.9rem;"></div></div>
         <button onclick="tab('home')" style="padding:10px 20px;"> 戻る </button>
     </div>
@@ -355,7 +668,21 @@ box-shadow:var(--shadow);
 border:1px solid var(--border);
 ">
             <div style="display:flex; gap:10px; align-items:center;">
-                <button onclick="moveMonth(-1)">◀</button>
+                <div style="display:flex; gap:10px; align-items:center;">
+
+<button onclick="moveMonth(-1)">
+←
+</button>
+
+<button onclick="goToday()">
+今日
+</button>
+
+<button onclick="moveMonth(1)">
+→
+</button>
+
+</div>◀</button>
                 <button onclick="vDate=new Date();renderCal();" style="font-weight:bold;"> 今日 </button>
                 <button onclick="moveMonth(1)">▶</button>
                 <h2 id="cal-month-title" style="margin:0 15px;"></h2>
@@ -415,7 +742,7 @@ border:1px solid var(--border);
             <button onclick="tab('notes')" style="background:none; border:none; cursor:pointer;"> ← 戻って保存 </button>
             <div id="save-status" style="font-weight:bold; color:var(--primary);"></div>
         </div>
-        <input type="text" id="memo-title" placeholder="無題のメモ" style="width:100%; font-size:1.8rem; border:none; background:transparent; font-weight:bold; outline:none;" oninput="autoSaveMemo()">
+        <input type="text" id="memo-title" placeholder="無題のメモ" style="width:100%; font-size:1.8rem; border:none; background:transparent; font-weight:bold; outline:none;" oninput="debouncedSaveMemo()">
         <div class="card">
             <div style="padding:10px; background:#f5f5f5; border-bottom:1px solid var(--border); display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
                 <button class="toolbar-btn" style="font-weight:bold;" onclick="formatDoc('bold')">B</button>
@@ -440,10 +767,141 @@ border:1px solid var(--border);
                 <button onclick="triggerImg()" style="cursor:pointer;">📷 画像挿入</button>
                 <input type="file" id="img-upload" style="display:none;" accept="image/*" onchange="insertImg(this)">
             </div>
-            <div id="memo-editor-content" contenteditable="true" oninput="autoSaveMemo()"></div>
+            <div id="memo-editor-content" contenteditable="true" oninput="debouncedSaveMemo()"></div>
+        </div>
+    </div>
+<div id="study-page" class="page">
+
+    <div class="card">
+        <div class="card-header">
+            🧠 学習モード選択
+        </div>
+
+        <div class="card-body">
+
+            <div style="
+                display:grid;
+                grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+                gap:20px;
+            ">
+
+                <button onclick="setGrade('小学')" class="study-btn">
+                    📘 小学生
+                </button>
+
+                <button onclick="setGrade('中学')" class="study-btn">
+                    📗 中学生
+                </button>
+
+                <button onclick="setGrade('高校')" class="study-btn">
+                    📕 高校生
+                </button>
+
+            </div>
+
         </div>
     </div>
 
+    <div class="card">
+        <div class="card-header">
+            📚 勉強ツール
+        </div>
+
+        <div class="card-body">
+
+            <h2 id="study-grade-title">
+                学年を選択してください
+            </h2>
+
+            <div id="study-tools" style="
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+margin-top:20px;
+">
+</div>
+
+<div class="card" style="margin-top:25px;">
+<div class="card-header">
+🧠 学習モード
+</div>
+
+<div class="card-body">
+
+<h2 id="study-question">
+学年を選択してください
+</h2>
+
+<input
+type="text"
+id="study-answer"
+placeholder="答えを入力"
+style="
+width:100%;
+padding:15px;
+margin-top:15px;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:1.1rem;
+"
+>
+
+<div style="
+display:flex;
+gap:15px;
+margin-top:15px;
+">
+
+<button
+onclick="checkAnswer()"
+style="
+flex:1;
+padding:15px;
+background:var(--primary);
+color:white;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+"
+>
+答え合わせ
+</button>
+
+<button
+onclick="generateQuestion()"
+style="
+flex:1;
+padding:15px;
+background:#eee;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+"
+>
+次の問題
+</button>
+
+</div>
+
+<div
+id="study-result"
+style="
+margin-top:20px;
+font-size:1.2rem;
+font-weight:bold;
+"
+>
+</div>
+
+</div>
+</div>
+
+        </div>
+    </div>
+
+</div>
     <div id="task-page" class="page">
         <h2> ✅ タスク管理 (ToDo) </h2>
         <div class="card"><div class="card-body">
@@ -462,6 +920,15 @@ border:1px solid var(--border);
         </div>
 
         <div id="game-stage" style="display:none; text-align:center;">
+            <h1 id="game-title"
+style="
+margin-bottom:20px;
+font-size:2.2rem;
+color:var(--primary);
+text-shadow:0 2px 10px rgba(0,0,0,0.15);
+">
+ゲーム
+</h1>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; max-width:800px; margin: 0 auto 15px auto;">
                 <button onclick="quitGame()" style="padding:10px 20px; cursor:pointer;"> ← 終了 </button>
                 <div style="display:flex; gap:20px; font-size:1.5rem; font-weight:bold;">
@@ -499,18 +966,26 @@ border:1px solid var(--border);
 
 <script>
     const PASS = "1234";
-    let isAdmin = localStorage.getItem('is_admin_v8') === 'true';
+    let isAdmin = localStorage.getItem('is_admin_v61') === 'true';
     let vDate = new Date();
-    let calEvents = JSON.parse(localStorage.getItem('cal_v8_4')) || []; 
-    let memos = JSON.parse(localStorage.getItem('memos_v8_4')) || [];
-    let tasks = JSON.parse(localStorage.getItem('tasks_v8_4')) || [];
+    let calEvents = JSON.parse(localStorage.getItem('cal_v8_5')) || [];
+    let memos = JSON.parse(localStorage.getItem('memos_v8_5')) || [];
+    let tasks = JSON.parse(localStorage.getItem('tasks_v8_5')) || [];
     let lastAction = null; 
     let currentMemoId = null;
     let isMemoManage = false;
     let ブロックパズルLevel = 1;
+    let currentGrade = "";
 
     // ⑩ 更新履歴 欠落なしで全記載
     const HIST = [
+        {v:"v0.6.2", d:"勉強機能を完全実装、カレンダー操作性改善、今日ボタン追加、学習問題生成機能追加"},
+        {v:"v0.6.1", d:"勉強ページ追加、学年別学習ツール追加、サイドバー構造バグ修正、UI安定化"},
+        {v:"v0.5.8", d:"ナイト表示カレンダー超改善、今日ハイライト追加、メモ自動バックアップ復元、2048暗色改善、モーダル視認性向上"},
+        {v:"v0.5.7", d:"ナイト表示の視認性を大幅改善、入力欄/UIコントラスト修正、ホームに今日の予定追加、メモピン留め機能強化、2048配色改善、検索高速化"},
+        {v:"v0.5.6", d:"ダークモード修正、カレンダー日付ズレ修正、2048表示改善、検索強化、初期描画安定化"},
+        {v:"v0.5.5", d:"ダークモードUI全面改善、ゲーム画面視認性向上、文字色自動調整、操作性向上"},
+        {v:"v0.5.4", d:"ダークモード追加、ホーム予定カード追加、メモピン留め機能追加"},
         {v:"v0.5.3", d: "レイアウト改善、カレンダーUI刷新、操作性向上、モバイル最適化強化" },
         {v:"v0.5.2", d: "メモ検索機能追加、操作性向上、メモ一覧高速フィルタ対応" },
         {v:"v0.5.1", d: "レスポンシブ最適化、カレンダー週跨ぎ表示改善、日付ズレ修正、継続バー表現強化" },
@@ -552,6 +1027,13 @@ border:1px solid var(--border);
         if(id === 'calendar') renderCal();
         if(id === 'notes') { isMemoManage=false; renderMemos(); updateBulkDeleteBtn(); }
         if(id === 'task-page') renderTasks();
+        if(id === 'study-page') {
+
+document.getElementById(
+'study-result'
+).innerHTML = "";
+
+}
         if(id === 'game-page') {
             document.getElementById('game-selection').style.display = 'grid';
             document.getElementById('game-stage').style.display = 'none';
@@ -560,11 +1042,11 @@ border:1px solid var(--border);
 
     function auth() {
         if(document.getElementById('pass-field').value === PASS) {
-            localStorage.setItem('is_admin_v8', 'true');
+            localStorage.setItem('is_admin_v61', 'true');
             location.reload();
         } else { alert("認証失敗"); }
     }
-    function logout() { localStorage.removeItem('is_admin_v8'); location.reload(); }
+    function logout() { localStorage.removeItem('is_admin_v61'); location.reload(); }
     function openLogin() { document.getElementById('login-modal').style.display='flex'; }
     function closeLogin() { document.getElementById('login-modal').style.display='none'; }
     function toggleAdminFolder() {
@@ -580,11 +1062,65 @@ border:1px solid var(--border);
     return `${y}-${m}-${d}`;
 }
 
-    function renderCal() {
+    function renderTodayEvents() {
+
+    const box =
+        document.getElementById('today-events');
+
+    if(!box) return;
+
+    const today =
+        formatLocalDate(new Date());
+
+    const todayList =
+        calEvents.filter(ev =>
+            ev.start.startsWith(today)
+        );
+
+    if(todayList.length === 0) {
+
+        box.innerHTML =
+            "今日の予定はありません";
+
+        return;
+    }
+
+    box.innerHTML =
+        todayList.map(ev => `
+            <div style="
+                padding:12px;
+                border-left:5px solid ${ev.color};
+                margin-bottom:10px;
+                background:${
+                    document.body.classList.contains('dark')
+                    ? 'linear-gradient(to right,#3a3a3a,#272727)'
+                    : 'linear-gradient(to right,#ffffff,#f4f4f4)'
+                };
+                border-radius:8px;
+            ">
+                <b>${ev.title}</b><br>
+                ${ev.start.substring(11,16)}
+                ～ 
+                ${ev.end.substring(11,16)}
+            </div>
+        `).join('');
+}
+
+function renderCal() {
         const grid = document.getElementById('cal-grid'); grid.innerHTML = '';
         const y = vDate.getFullYear(), m = vDate.getMonth();
         document.getElementById('cal-month-title').innerText = `${y}年 ${m+1}月`;
-        ['日','月','火','水','木','金','土'].forEach(d => grid.innerHTML += `<div style="background:#eee;text-align:center;padding:5px;font-size:0.8rem;font-weight:bold;">${d}</div>`);
+        ['日','月','火','水','木','金','土'].forEach(d => grid.innerHTML += `
+<div style="
+background:var(--accent-bg);
+text-align:center;
+padding:5px;
+font-size:0.8rem;
+font-weight:bold;
+border-radius:8px;
+">
+${d}
+</div>`);
         
         const first = new Date(y,m,1).getDay(), last = new Date(y,m+1,0).getDate();
         for(let i=0; i<first; i++) grid.innerHTML += `<div style="background:#fafafa;"></div>`;
@@ -595,8 +1131,26 @@ border:1px solid var(--border);
             const cell = document.createElement('div');
             cell.className = 'cal-day';
             cell.id = `cal-day-${dayStr}`;
-            const isToday = new Date().toLocaleDateString() === new Date(y,m,d).toLocaleDateString();
-            cell.innerHTML = `<span class="day-num" style="${isToday?'color:white;background:var(--primary);border-radius:50%;padding:2px 6px;':''}">${d}</span>`;
+            const isToday =
+    new Date().toLocaleDateString()
+    ===
+    new Date(y,m,d).toLocaleDateString();
+
+if(isToday) {
+
+    cell.classList.add(
+        'today-cell'
+    );
+}
+
+cell.innerHTML = `
+    <span class="
+        day-num
+        ${isToday ? 'today-number' : ''}
+    ">
+        ${d}
+    </span>
+`;
             cell.onclick = (e) => { if(e.target === cell || e.target.className === 'day-num') openCalModal(dayStr); };
             grid.appendChild(cell);
             dayMap[dayStr] = cell;
@@ -625,8 +1179,8 @@ border:1px solid var(--border);
             let row = 0;
             while(true) {
                 let ok = true;
-                for(let d = new Date(current); d <= stop; d.setDate(d.getDate()+1)) {
-                    let ds = d.toISOString().split('T')[0];
+                for(let d = new Date(current); d.getTime() <= stop.getTime(); d.setDate(d.getDate()+1)) {
+                    let ds = formatLocalDate(d);
                     if(!rowTracker[ds]) rowTracker[ds] = [];
                     if(rowTracker[ds][row]) { ok = false; break; }
                 }
@@ -635,8 +1189,8 @@ border:1px solid var(--border);
             }
 
             // 描画
-            for(let d = new Date(current); d <= stop; d.setDate(d.getDate()+1)) {
-                let ds = d.toISOString().split('T')[0];
+            for(let d = new Date(current); d.getTime() <= stop.getTime(); d.setDate(d.getDate()+1)) {
+                let ds = formatLocalDate(d);
                 let cell = document.getElementById(`cal-day-${ds}`);
                 if(!cell) continue;
 
@@ -663,7 +1217,6 @@ border:1px solid var(--border);
         currentEditingEventId = null;
         document.getElementById('cal-modal-date').innerText = dayStr + " の予定";
         document.getElementById('ev-title').value = "";
-        // ⑥ 初期設定 9:00～9:30
         document.getElementById('ev-start').value = dayStr + "T09:00";
         document.getElementById('ev-end').value = dayStr + "T09:30";
         document.getElementById('ev-loc').value = "";
@@ -724,16 +1277,20 @@ border:1px solid var(--border);
             const idx = calEvents.findIndex(x => x.id === ev.id);
             calEvents[idx] = ev;
         } else { calEvents.push(ev); }
-        localStorage.setItem('cal_v8_4', JSON.stringify(calEvents));
-        closeCalModal(); renderCal();
+        localStorage.setItem('cal_v8_5', JSON.stringify(calEvents));
+        closeCalModal();
+renderCal();
+renderTodayEvents();
     }
 
     function deleteEvent(id) {
         lastAction = { type: 'cal', data: JSON.parse(JSON.stringify(calEvents)) };
         showUndo();
         calEvents = calEvents.filter(x => x.id !== id);
-        localStorage.setItem('cal_v8_4', JSON.stringify(calEvents));
-        renderCal(); closeCalModal();
+        localStorage.setItem('cal_v8_5', JSON.stringify(calEvents));
+        renderCal();
+renderTodayEvents();
+closeCalModal();
     }
 
     function openSearch() {
@@ -742,7 +1299,12 @@ border:1px solid var(--border);
         queryInput.oninput = () => {
             const q = queryInput.value.toLowerCase();
             if(!q) { document.getElementById('search-results').innerHTML = ''; return; }
-            const res = calEvents.filter(ev => ev.title.toLowerCase().includes(q) || (ev.desc && ev.desc.toLowerCase().includes(q)));
+            const res = calEvents.filter(ev =>
+    ev.title.toLowerCase().includes(q) ||
+    (ev.desc && ev.desc.toLowerCase().includes(q)) ||
+    (ev.loc && ev.loc.toLowerCase().includes(q)) ||
+    (ev.attend && ev.attend.toLowerCase().includes(q))
+);
             document.getElementById('search-results').innerHTML = res.map(ev => `<div onclick="vDate=new Date('${ev.start}');renderCal();closeSearch();" style="padding:12px; border-bottom:1px solid #eee; cursor:pointer;">
                 <b>${ev.start.replace('T',' ')}</b><br>${ev.title}</div>`).join('');
         };
@@ -757,7 +1319,7 @@ border:1px solid var(--border);
     function executeUndo() {
         if(!lastAction) return;
         if(lastAction.type === 'cal') calEvents = lastAction.data;
-        localStorage.setItem('cal_v8_4', JSON.stringify(calEvents));
+        localStorage.setItem('cal_v8_5', JSON.stringify(calEvents));
         renderCal(); document.getElementById('undo-toast').style.display = 'none';
     }
 
@@ -780,7 +1342,14 @@ border:1px solid var(--border);
 
             return title.includes(q) || content.includes(q);
         })
-        .sort((a, b) => b.updated - a.updated)
+        .sort((a, b) => {
+
+    if(a.pinned && !b.pinned) return -1;
+
+    if(!a.pinned && b.pinned) return 1;
+
+    return b.updated - a.updated;
+})
         .forEach(m => {
 
             const d = document.createElement('div');
@@ -789,7 +1358,18 @@ border:1px solid var(--border);
                 'note-card' +
                 (isMemoManage ? ' selectable' : '');
 
-            d.onclick = (e) => {
+            day.onclick = () => {
+
+document.getElementById('cal-modal').style.display =
+'flex';
+
+document.getElementById('cal-start').value =
+dateStr + "T09:00";
+
+document.getElementById('cal-end').value =
+dateStr + "T10:00";
+
+}; (e) => {
 
                 if(isMemoManage) {
 
@@ -816,7 +1396,21 @@ border:1px solid var(--border);
                     onclick="updateBulkDeleteBtn()"
                 >
 
-                <h3>${m.tit || '無題'}</h3>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h3>${m.tit || '無題'}</h3>
+
+    <button
+        onclick="event.stopPropagation();togglePin(${m.id})"
+        style="
+            border:none;
+            background:none;
+            cursor:pointer;
+            font-size:1.2rem;
+        "
+    >
+        ${m.pinned ? '📌' : '📍'}
+    </button>
+</div>
 
                 <p>
                     ${
@@ -853,7 +1447,20 @@ border:1px solid var(--border);
             toggleMemoManage();
         }
     }
+function togglePin(id) {
 
+    const idx =
+        memos.findIndex(m => m.id === id);
+
+    if(idx === -1) return;
+
+    memos[idx].pinned =
+        !memos[idx].pinned;
+
+    saveMemos();
+
+    renderMemos();
+}
     function openMemo(id) {
         let m = memos.find(x=>x.id===id); currentMemoId = id; tab('memo-editor');
         document.getElementById('memo-title').value = m.tit;
@@ -864,14 +1471,57 @@ border:1px solid var(--border);
     }
 
     function applyExactFontSize(px) {
-        // ⑨ 文字サイズを自由に設定
         document.getElementById('memo-editor-content').style.fontSize = px + "px";
         let idx = memos.findIndex(m=>m.id===currentMemoId);
         if(idx!==-1) memos[idx].fontSize = px;
         autoSaveMemo();
     }
 
-    function newMemo() { const id = Date.now(); memos.push({id, tit:"", con:"", updated:id, fontSize:16}); saveMemos(); openMemo(id); }
+    function newMemo() { const id = Date.now(); memos.push({
+    id,
+    tit:"",
+    con:"",
+    updated:id,
+    fontSize:16,
+    pinned:false
+}); saveMemos(); openMemo(id); }
+    let memoSaveTimer = null;
+
+function debouncedSaveMemo() {
+    clearTimeout(memoSaveTimer);
+
+    memoSaveTimer = setTimeout(() => {
+        autoSaveMemo();
+    }, 500);
+}
+/* ===== v0.5.8 自動バックアップ ===== */
+
+function saveMemoBackup() {
+
+    if(currentMemoId === null) return;
+
+    const backup = {
+
+        id: currentMemoId,
+
+        title:
+            document.getElementById(
+                'memo-title'
+            ).value,
+
+        content:
+            document.getElementById(
+                'memo-editor-content'
+            ).innerHTML,
+
+        time: Date.now()
+    };
+
+    localStorage.setItem(
+        'workspace_memo_backup',
+        JSON.stringify(backup)
+    );
+}
     function autoSaveMemo() {
         let idx = memos.findIndex(m=>m.id===currentMemoId);
         if(idx!==-1) {
@@ -879,9 +1529,10 @@ border:1px solid var(--border);
             memos[idx].con = document.getElementById('memo-editor-content').innerHTML;
             memos[idx].updated = Date.now(); saveMemos();
             document.getElementById('save-status').innerText = "保存済み";
+            saveMemoBackup();
         }
     }
-    function saveMemos() { localStorage.setItem('memos_v8_4', JSON.stringify(memos)); }
+    function saveMemos() { localStorage.setItem('memos_v8_5', JSON.stringify(memos)); }
     function formatDoc(c,v=null) { document.execCommand(c, false, v); }
     function applyFont(f) {
         document.getElementById('memo-editor-content').style.fontFamily = f;
@@ -896,7 +1547,7 @@ border:1px solid var(--border);
     function addTask() {
         const v = document.getElementById('task-input').value; if(!v) return;
         tasks.push({t:v, d:false}); document.getElementById('task-input').value='';
-        renderTasks(); localStorage.setItem('tasks_v8_4', JSON.stringify(tasks));
+        renderTasks(); localStorage.setItem('tasks_v8_5', JSON.stringify(tasks));
     }
     function renderTasks() {
         const l = document.getElementById('task-list'); l.innerHTML = '';
@@ -915,18 +1566,19 @@ border:1px solid var(--border);
     }
     function toggleTask(i) {
         tasks[i].d = !tasks[i].d;
-        localStorage.setItem('tasks_v8_4', JSON.stringify(tasks));
+        localStorage.setItem('tasks_v8_5', JSON.stringify(tasks));
         renderTasks();
     }
     function deleteTask(i) {
         tasks.splice(i, 1);
-        localStorage.setItem('tasks_v8_4', JSON.stringify(tasks));
+        localStorage.setItem('tasks_v8_5', JSON.stringify(tasks));
         renderTasks();
     }
 
     // --- ゲーム (⑭ 2048アニメーション) ---
     let gameInt, score = 0, board, piece, gameSpeed = 500;
     function playGame(type) {
+        document.getElementById('game-title').innerText = type;
         score = 0; ブロックパズルLevel = 1; gameSpeed = 500;
         document.getElementById('game-score').innerText = 0;
         document.getElementById('game-lv').innerText = 1;
@@ -1002,14 +1654,21 @@ border:1px solid var(--border);
             d.style.top = (15 + y * 107) + "px";
             
             if(v !== 0) {
-                d.innerText = v;
-                d.style.background = `hsl(30, 60%, ${95-Math.log2(v)*6}%)`;
-                d.style.color = v <= 4 ? '#776e65' : '#f9f6f2';
-                d.style.transform = "scale(1)";
-            } else {
-                d.style.background = "rgba(238, 228, 218, 0.35)";
-                d.style.zIndex = "1";
-            }
+    d.innerText = v;
+
+    d.style.background = `hsl(${40 - Math.log2(v) * 25}, 85%, 60%)`;
+    d.style.color = v >= 8 ? "#fff" : "#333";
+    d.style.fontWeight = "bold";
+    d.style.display = "flex";
+    d.style.alignItems = "center";
+    d.style.justifyContent = "center";
+    d.style.fontSize = "32px";
+    d.style.borderRadius = "12px";
+    d.style.transition = "all 0.15s";
+} else {
+    d.style.background = "rgba(238, 228, 218, 0.35)";
+    d.style.zIndex = "1";
+}
             c.appendChild(d);
         });
     }
@@ -1075,9 +1734,188 @@ border:1px solid var(--border);
             }
         }
     });
+function setGrade(g) {
 
+    currentGrade = g;
+
+    document.getElementById(
+        'study-grade-title'
+    ).innerText =
+        g + " 用の勉強ツール";
+
+    const tools =
+        document.getElementById(
+            'study-tools'
+        );
+
+    let html = "";
+
+    if(g === "小学") {
+
+        html = `
+
+        <div class="study-tool-card">
+            <h3>🔢 算数トレーニング</h3>
+            <p>たし算・ひき算・九九を練習！</p>
+        </div>
+
+        <div class="study-tool-card">
+            <h3>📝 漢字練習</h3>
+            <p>小学生漢字を勉強！</p>
+        </div>
+
+        <div class="study-tool-card">
+            <h3>🌍 地図クイズ</h3>
+            <p>都道府県を覚えよう！</p>
+        </div>
+        `;
+    }
+
+    else if(g === "中学") {
+
+        html = `
+
+        <div class="study-tool-card">
+            <h3>📐 数学演習</h3>
+            <p>一次関数・方程式を勉強！</p>
+        </div>
+
+        <div class="study-tool-card">
+            <h3>⚗️ 理科暗記</h3>
+            <p>化学式・電流を学習！</p>
+        </div>
+
+        <div class="study-tool-card">
+            <h3>🇬🇧 英単語</h3>
+            <p>中学英語を強化！</p>
+        </div>
+        `;
+    }
+
+    else if(g === "高校") {
+
+        html = `
+
+        <div class="study-tool-card">
+            <h3>📈 数学ⅠA</h3>
+            <p>二次関数・確率を演習！</p>
+        </div>
+
+        <div class="study-tool-card">
+            <h3>🧪 化学基礎</h3>
+            <p>mol計算・化学反応式！</p>
+        </div>
+
+        <div class="study-tool-card">
+            <h3>📖 古文文法</h3>
+            <p>助動詞・敬語を勉強！</p>
+        </div>
+        `;
+    }
+
+    tools.innerHTML = html;
+
+generateQuestion();
+}
+let currentAnswer = "";
+
+function generateQuestion() {
+
+const q =
+document.getElementById('study-question');
+
+const result =
+document.getElementById('study-result');
+
+const input =
+document.getElementById('study-answer');
+
+result.innerHTML = "";
+input.value = "";
+
+if(currentGrade === "小学") {
+
+const a = Math.floor(Math.random()*10)+1;
+const b = Math.floor(Math.random()*10)+1;
+
+q.innerText =
+`${a} + ${b} は？`;
+
+currentAnswer = String(a+b);
+
+}
+
+else if(currentGrade === "中学") {
+
+const a = Math.floor(Math.random()*20)+1;
+const b = Math.floor(Math.random()*20)+1;
+
+q.innerText =
+`${a} × ${b} は？`;
+
+currentAnswer = String(a*b);
+
+}
+
+else if(currentGrade === "高校") {
+
+const a = Math.floor(Math.random()*10)+1;
+const b = Math.floor(Math.random()*10)+1;
+
+q.innerText =
+`${a}² + ${b}² は？`;
+
+currentAnswer =
+String((a*a)+(b*b));
+
+}
+
+else {
+
+q.innerText =
+"先に学年を選択してください";
+
+}
+
+}
+
+function checkAnswer() {
+
+const user =
+document.getElementById('study-answer').value;
+
+const result =
+document.getElementById('study-result');
+
+if(user === currentAnswer) {
+
+result.innerHTML =
+"⭕ 正解！";
+
+result.style.color =
+"#43a047";
+
+}
+else {
+
+result.innerHTML =
+`❌ 不正解！ 正解: ${currentAnswer}`;
+
+result.style.color =
+"#e53935";
+
+}
+
+}
     function closeCalModal() { document.getElementById('cal-modal').style.display='none'; }
-    function moveMonth(n) { vDate.setMonth(vDate.getMonth()+n); renderCal(); }
+    function moveMonth(n) {
+        function goToday() {
+
+vDate = new Date();
+
+renderCal();
+
+} vDate.setMonth(vDate.getMonth()+n); renderCal(); }
 
     window.onload = () => {
         if(isAdmin) {
@@ -1086,11 +1924,72 @@ border:1px solid var(--border);
         }
         document.getElementById('history-preview').innerHTML = HIST.slice(0,2).map(h=>`<b>${h.v}</b>: ${h.d}`).join('<br>');
         document.getElementById('history-full').innerHTML = HIST.map(h=>`<b>${h.v}</b>: ${h.d}`).join('<br>');
-        setInterval(() => {
-            const n = new Date(); document.getElementById('clock').innerText = n.toLocaleTimeString('ja-JP');
-            document.getElementById('date-string').innerText = n.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
-        }, 1000);
+        function updateClock() {
+    const n = new Date();
+
+    document.getElementById('clock').innerText =
+        n.toLocaleTimeString('ja-JP');
+
+    document.getElementById('date-string').innerText =
+        n.toLocaleDateString(
+            'ja-JP',
+            {
+                year:'numeric',
+                month:'long',
+                day:'numeric',
+                weekday:'short'
+            }
+        );
+}
+
+updateClock();
+
+setInterval(updateClock, 1000);
         renderMemos();
+renderCal();
+renderTodayEvents();
+renderTasks();
+/* ===== v0.5.8 バックアップ復元 ===== */
+
+const backup =
+    JSON.parse(
+        localStorage.getItem(
+            'workspace_memo_backup'
+        )
+    );
+
+if(
+    backup &&
+    confirm(
+        '前回の編集中メモを復元しますか？'
+    )
+) {
+
+    const exists =
+        memos.find(
+            m => m.id === backup.id
+        );
+
+    if(exists) {
+
+        exists.tit = backup.title;
+        exists.con = backup.content;
+
+    } else {
+
+        memos.push({
+
+            id: backup.id,
+            tit: backup.title,
+            con: backup.content,
+            updated: Date.now(),
+            pinned:false
+
+        });
+    }
+
+    saveMemos();
+}
     };
 </script>
 </body>
